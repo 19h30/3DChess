@@ -92,7 +92,7 @@ public class BaseGameCTL : MonoBehaviour
         {
             case EPlayer.BLACK:
                 txt_current_player.text = "BLACK";
-                txt_current_player.color = Color.black;
+                txt_current_player.color = Color.grey;
                 break;
             case EPlayer.WHITE:
                 txt_current_player.text = "WHITE";
