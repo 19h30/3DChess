@@ -13,8 +13,8 @@ public class P_Pawn : BasePiece
 
     public override void BeSelected()
     {
-        playSelectedSound();
-
+        playSelectedSound();        
+       
         switch (this._player)
         {
             case EPlayer.BLACK:
@@ -28,6 +28,13 @@ public class P_Pawn : BasePiece
 
     private void BeSelected_White()
     {
+        if (ChessBoard.Current.Cells[Location.X][Location.Y].CurrentPiece.Info.Name[0] == 'W')
+        {
+            if (ChessBoard.Current.Cells[Location.X][Location.Y].Location.Y != 1)
+            {
+                isFirstMoved = false;
+            }
+        }
         //Hiển thị các nước đi có thể
         if (isFirstMoved)
         {
@@ -58,6 +65,13 @@ public class P_Pawn : BasePiece
 
     private void BeSelected_Black()
     {
+        if (ChessBoard.Current.Cells[Location.X][Location.Y].CurrentPiece.Info.Name[0] == 'B')
+        {
+            if (ChessBoard.Current.Cells[Location.X][Location.Y].Location.Y != 6)
+            {
+                isFirstMoved = false;
+            }
+        }
         //Hiển thị các nước đi có thể
         if (isFirstMoved)
         {
