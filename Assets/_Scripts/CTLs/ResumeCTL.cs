@@ -32,6 +32,7 @@ public class ResumeCTL : MonoBehaviour {
     public void MainMenu()
     {
         Time.timeScale = 1;
+        BaseGameCTL.isShowing = !BaseGameCTL.isShowing;
         BaseGameCTL.Current.GameState = EGameState.GAME_OVER;
         music = GameObject.Find("Music");
         Destroy(music);

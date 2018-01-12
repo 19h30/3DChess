@@ -86,7 +86,6 @@ public class BaseGameCTL : MonoBehaviour
             {
                 Time.timeScale = 1;    
             }
-
         }
         if (GameState == EGameState.PLAYING)
         {
