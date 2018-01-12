@@ -26,23 +26,27 @@ public abstract class BasePiece : MonoBehaviour
     [SerializeField]
     AudioClip moveSound;
 
+    AudioSource audioSource;
+
     void Awake()
     {
+        audioSource = GameObject.Find("Audio").GetComponent<AudioSource>();
+        audioSource.volume = PlayerPrefs.GetFloat("volume");
     }
 
     public void playAttackSound()
     {
-        GetComponent<AudioSource>().PlayOneShot(attackSound);
+        audioSource.PlayOneShot(attackSound);
     }
 
     public void playMoveSound()
     {
-        GetComponent<AudioSource>().PlayOneShot(moveSound);
+        audioSource.PlayOneShot(moveSound);
     }
 
     public void playSelectedSound()
     {
-        GetComponent<AudioSource>().PlayOneShot(beSelectedSound);
+        audioSource.PlayOneShot(beSelectedSound);
     }
 
     public void SetInfo(PieceInfo info, Cell newCell)

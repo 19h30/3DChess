@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class BaseGameCTL : MonoBehaviour
 {
@@ -65,6 +66,10 @@ public class BaseGameCTL : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        }
         if (GameState == EGameState.PLAYING)
         {
             _time += Time.deltaTime;
@@ -143,7 +148,9 @@ public class BaseGameCTL : MonoBehaviour
     public void GameOver(EPlayer winPlayer)
     {
         GameState = EGameState.GAME_OVER;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         Debug.Log("WinPlayer : " + winPlayer);
+        PlayerPrefs.SetString("winner", winPlayer.ToString());
     }
     public void removeAllPiceces()
     {

@@ -12,10 +12,15 @@ public class MenuCTL : MonoBehaviour {
     // 3: Options
     // 4: Exit
     // Use this for initialization
-    void Start()
+
+    GameObject audioSource;
+
+    void Awake()
     {
-        DontDestroyOnLoad(gameObject);       
+        audioSource = GameObject.Find("Music");
+        DontDestroyOnLoad(audioSource);
     }
+    
 
     // Update is called once per frame
     void Update()
