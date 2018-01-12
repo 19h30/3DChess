@@ -23,7 +23,7 @@ public class MenuCTL : MonoBehaviour {
     }
     public void LoadGame()
     {
-        indexMenu = 2;
+        indexMenu = 1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
     public void QuitGame()

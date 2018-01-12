@@ -37,20 +37,24 @@ public class ChessBoard : MonoBehaviour
     }
     void Start()
     {
-        InitChessBoard();
-        InitChessPieces();    
+        switch (MenuCTL.indexMenu)
+        {
+            case 0:
+                InitChessBoard();
+                InitChessPieces();
+                break;
+            case 1:
+                InitChessBoard();
+                InitChessPieces();
+                LoadGame();
+                break;
+        }
+            
     }
     public bool isShow = false;
     
     void Update()
-    {        
-        if (MenuCTL.indexMenu == 2)
-        {
-            InitChessBoard();
-            InitChessPieces();
-            LoadGame();
-        }
-       
+    {
         if (BaseGameCTL.Current.GameState == EGameState.PLAYING)
         {
             CheckUserInput();

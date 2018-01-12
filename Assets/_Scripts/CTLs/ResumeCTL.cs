@@ -2,53 +2,52 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class ResumeCTL : MonoBehaviour {
 
     GameObject audioSource;
     public static int indexMenu = -1;
-    private bool isShowing = true;
-    //GameObject p;
+    //private bool isShowing = true;
+    GameObject resume;
+    GameObject board;
+    GameObject text;
+    public Button resumeButton;
+    GameObject music;
 
     void Awake()
     {
         audioSource = GameObject.Find("Music");
         DontDestroyOnLoad(audioSource);
-      //  p = GameObject.Find("Canvas_resume");
-      //  p.SetActive(false);
+        resume = GameObject.Find("ResumeMenu");
+        board = GameObject.Find("ChessBoard");
+        text = GameObject.Find("GUI");
     }
 
-    void Update()
+    void OnEnable()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {           
-            if (Time.timeScale == 1)
-            {
-
-                Time.timeScale = 0;
-            }
-            else
-            {
-                Time.timeScale = 1;
-            }
-
-        }
+        resumeButton.onClick.AddListener(delegate { ResumeGame(); });
     }
 
-    public void NewGame()
+    public void MainMenu()
     {
-        BaseGameCTL.Current.removeAllPiceces();
-        ChessBoard.Current.InitChessBoard();       
-        ChessBoard.Current.InitChessPieces();
+        music = GameObject.Find("Music");
+        Destroy(music);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
     }
-    public void LoadGame()
+    public void ResumeGame()
     {
-        BaseGameCTL.Current.removeAllPiceces();
-        ChessBoard.Current.LoadGame();
+        Time.timeScale = 1;
+        resume.SetActive(BaseGameCTL.isShowing);
+        board.SetActive(!BaseGameCTL.isShowing);
+        text.SetActive(!BaseGameCTL.isShowing);
+        BaseGameCTL.isShowing = !BaseGameCTL.isShowing;
+
     }
     public void SaveGame()
     {
         ChessBoard.Current.SaveGame();
+        ResumeGame();
     }
     public void QuitGame()
     {

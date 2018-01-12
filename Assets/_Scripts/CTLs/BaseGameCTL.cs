@@ -52,25 +52,29 @@ public class BaseGameCTL : MonoBehaviour
     }
     #endregion
 
-    GameObject p;
+    GameObject resume;
+    GameObject board;
+    GameObject text;
     void Awake()
     {
         Current = this;
         CurrentPlayer = EPlayer.WHITE;
         GameState = EGameState.PLAYING;
         GameInput = EGameInput.KEYBOARD;
-        p = GameObject.Find("Canvas_resume");
-        p.SetActive(false);
+        resume = GameObject.Find("ResumeMenu");
+        board = GameObject.Find("ChessBoard");
+        text = GameObject.Find("GUI");
+        resume.SetActive(false);
     }
 
     void Start()
     {
        // StartCoroutine(UpdateTime());
     }
-    private bool isShowing = true;
+    public static bool isShowing = true;
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             OnKeyDownSpace();
             if (Time.timeScale == 1)
@@ -83,10 +87,6 @@ public class BaseGameCTL : MonoBehaviour
                 Time.timeScale = 1;    
             }
 
-        }
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         }
         if (GameState == EGameState.PLAYING)
         {
@@ -104,17 +104,10 @@ public class BaseGameCTL : MonoBehaviour
 
     public void OnKeyDownSpace()
     {
-        if (p != null)
-        {           
-            p.SetActive(isShowing);
-            isShowing = !isShowing; 
-        }
-        else
-        {
-            p = new GameObject("Canvas_resume");
-        }
-        
-        
+        resume.SetActive(isShowing);
+        board.SetActive(!isShowing);
+        text.SetActive(!isShowing);
+        isShowing = !isShowing;
     }
 
     private IEnumerator UpdateTime()
