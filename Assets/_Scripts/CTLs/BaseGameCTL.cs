@@ -7,6 +7,7 @@ public class BaseGameCTL : MonoBehaviour
 {
     public Text txt_current_player;
 
+
     public static BaseGameCTL Current;
 
     public const float TIME_TO_THINK = 10;
@@ -168,6 +169,6 @@ public class BaseGameCTL : MonoBehaviour
 
             }
         }
-    }    
+    }
 
 }
