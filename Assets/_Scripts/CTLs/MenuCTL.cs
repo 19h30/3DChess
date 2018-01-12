@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public class MenuCTL : MonoBehaviour {
 
     GameObject audioSource;
+    public static int indexMenu = -1;
 
     void Awake()
     {
@@ -16,19 +17,14 @@ public class MenuCTL : MonoBehaviour {
 
     public void PlayGame()
     {
+        indexMenu = 0;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
 
     }
-    public void SaveGame()
+    public void LoadGame()
     {
-        string json = JsonUtility.ToJson(ChessBoard.Current);
-        string fullPath = Application.persistentDataPath + "/Chessboard.json";
-        if (File.Exists(fullPath))
-        {
-            File.Delete(fullPath);
-        }
-        File.WriteAllText(fullPath, json);
-        
+        indexMenu = 2;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
     public void QuitGame()
     {

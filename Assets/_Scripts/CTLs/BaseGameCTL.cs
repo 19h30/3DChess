@@ -52,21 +52,38 @@ public class BaseGameCTL : MonoBehaviour
     }
     #endregion
 
+    GameObject p;
     void Awake()
     {
         Current = this;
         CurrentPlayer = EPlayer.WHITE;
         GameState = EGameState.PLAYING;
         GameInput = EGameInput.KEYBOARD;
+        p = GameObject.Find("Canvas_resume");
+        p.SetActive(false);
     }
 
     void Start()
     {
        // StartCoroutine(UpdateTime());
     }
-
+    private bool isShowing = true;
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            OnKeyDownSpace();
+            if (Time.timeScale == 1)
+            {
+
+                Time.timeScale = 0;               
+            }
+            else
+            {
+                Time.timeScale = 1;    
+            }
+
+        }
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
@@ -82,6 +99,22 @@ public class BaseGameCTL : MonoBehaviour
                 TimeIsOut();
             }
         }
+
+    }
+
+    public void OnKeyDownSpace()
+    {
+        if (p != null)
+        {           
+            p.SetActive(isShowing);
+            isShowing = !isShowing; 
+        }
+        else
+        {
+            p = new GameObject("Canvas_resume");
+        }
+        
+        
     }
 
     private IEnumerator UpdateTime()

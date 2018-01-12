@@ -35,16 +35,22 @@ public class ChessBoard : MonoBehaviour
     {
         Current = this;
     }
-
     void Start()
     {
         InitChessBoard();
-        InitChessPieces();
+        InitChessPieces();    
     }
-
-
+    public bool isShow = false;
+    
     void Update()
-    {
+    {        
+        if (MenuCTL.indexMenu == 2)
+        {
+            InitChessBoard();
+            InitChessPieces();
+            LoadGame();
+        }
+       
         if (BaseGameCTL.Current.GameState == EGameState.PLAYING)
         {
             CheckUserInput();
@@ -232,7 +238,7 @@ public class ChessBoard : MonoBehaviour
 
         ListContainer ListPiecesInfo = new ListContainer(listInfo,(int)Math.Round(BaseGameCTL.Current._time),_player);
         string json = JsonUtility.ToJson(ListPiecesInfo);       
-        string path = "C:\\Users\\NgDang\\Desktop";
+        string path = Application.persistentDataPath;
         string _file = "ChessBoard.json";
         string fullPath = Path.Combine(path, _file);
         if (File.Exists(fullPath))
@@ -249,7 +255,7 @@ public class ChessBoard : MonoBehaviour
         ListContainer ListPiecesInfo = new ListContainer();
 
         string file = "ChessBoard.json";
-        string path = "C:\\Users\\NgDang\\Desktop";
+        string path = Application.persistentDataPath;
         string filePath = Path.Combine(path, file);
 
         if (File.Exists(filePath))
