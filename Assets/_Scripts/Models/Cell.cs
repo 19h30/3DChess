@@ -3,6 +3,7 @@ using System.Collections;
 
 public class Cell : MonoBehaviour
 {
+    Cell() { }
     private Transform cellSelectedObj;
 
     public BasePiece CurrentPiece { get; private set; }

@@ -7,6 +7,7 @@ using System;
 public class ChessBoard : MonoBehaviour
 {
     public static ChessBoard Current;
+    public static ListContainer ListPiecesInfoToJson;
 
     public GameObject cellPrefap;
     public LayerMask CellLayerMask = 0;
@@ -29,6 +30,19 @@ public class ChessBoard : MonoBehaviour
     private Cell[][] _cells;
     public Cell[][] Cells { get { return _cells; } }
 
+    public List<BasePiece> Pieces
+    {
+        get
+        {
+            return pieces;
+        }
+
+        set
+        {
+            pieces = value;
+        }
+    }
+
     private List<BasePiece> pieces;
 
     void Awake()
@@ -37,9 +51,31 @@ public class ChessBoard : MonoBehaviour
     }
 
     void Start()
-    {
-        InitChessBoard();
-        InitChessPieces();
+    {      
+        switch (MenuCTL._MenuState)
+        {
+            case 0:
+                InitChessBoard();
+                InitChessPieces();
+                break;
+            case 1:
+                break;
+            case 2:
+                InitChessBoard();
+                InitChessPieces();
+                BaseGameCTL.Current.removeAllPiceces();
+                LoadGame();
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            default:
+                InitChessBoard();
+                InitChessPieces();
+                break;
+        }
+               
     }
 
 
@@ -54,28 +90,28 @@ public class ChessBoard : MonoBehaviour
 
 
     private void CheckUserInput()   
-    {
-        #region MouseInput
+    {       
+       
+       
+        
+        #region GameInput
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
-        if (Input.GetMouseButtonDown(0))
+
+        ///Chỉ xử lý input trong 2 trường hợp
+        ///2. Chỏ vào ô đang được targeted:
+        ///2.1 : Ô được targeted trống không
+        ///2.2 : Ô được targeted có quân cờ của quân địch
+        ///
+        ///1. Bắt đầu lượt đi mới của đối thủ:
+        ///     CHọn vào 1 ô chứa quân cờ cùng màu với người đang chơi
+
+        if (Physics.Raycast(ray, out hit, 1000, CellLayerMask.value))
         {
-            ///Chỉ xử lý input trong 2 trường hợp
-            ///2. Chỏ vào ô đang được targeted:
-            ///2.1 : Ô được targeted trống không
-            ///2.2 : Ô được targeted có quân cờ của quân địch
-            ///
-            ///1. Bắt đầu lượt đi mới của đối thủ:
-            ///     CHọn vào 1 ô chứa quân cờ cùng màu với người đang chơi
-
-            if (Physics.Raycast(ray, out hit, 1000, CellLayerMask.value))
+            Cell  newCell = hit.collider.GetComponent<Cell>();
+            KeyBoardHelper.Update();
+            if (Input.GetMouseButtonDown(0))
             {
-                Cell newCell = hit.collider.GetComponent<Cell>();
-
-                KeyBoardHelper.Update(newCell);
-
-                Debug.Log(newCell.Location.ToString());
-
                 switch (newCell.State)
                 {
                     ///Tức là chọn vào 1 ô bình thường 
@@ -114,7 +150,7 @@ public class ChessBoard : MonoBehaviour
                             ///Quân cờ bị targeted là của quân địch
                             if (newCell.CurrentPiece.Player != BaseGameCTL.Current.CurrentPlayer)
                             {
-                                _currentSelectedCell.CurrentPiece.Attack(newCell);    
+                                _currentSelectedCell.CurrentPiece.Attack(newCell);
                             }
                         }
                         break;
@@ -125,7 +161,7 @@ public class ChessBoard : MonoBehaviour
         }
         #endregion
 
-       
+
     }
 
     [ContextMenu("InitChessBoard")]
@@ -161,7 +197,7 @@ public class ChessBoard : MonoBehaviour
     {
 
         BaseGameCTL.Current.removeAllPiceces();
-        pieces = new List<BasePiece>();
+        Pieces = new List<BasePiece>();
 
         List<PieceInfo> listInfo = new List<PieceInfo>();
 
@@ -201,7 +237,7 @@ public class ChessBoard : MonoBehaviour
 
             BasePiece p = GO.GetComponent<BasePiece>();
             p.SetInfo(info, _cells[info.X][info.Y]);
-            pieces.Add(p);
+            Pieces.Add(p);
 
         }
 
@@ -230,9 +266,9 @@ public class ChessBoard : MonoBehaviour
             }
         }
 
-        ListContainer ListPiecesInfo = new ListContainer(listInfo,(int)Math.Round(BaseGameCTL.Current._time),_player);
-        string json = JsonUtility.ToJson(ListPiecesInfo);       
-        string path = "C:\\Users\\NgDang\\Desktop";
+        ListPiecesInfoToJson = new ListContainer(listInfo,(int)Math.Round(BaseGameCTL.Current._time),_player);
+        string json = JsonUtility.ToJson(ListPiecesInfoToJson);       
+        string path = Application.persistentDataPath;
         string _file = "ChessBoard.json";
         string fullPath = Path.Combine(path, _file);
         if (File.Exists(fullPath))
@@ -242,21 +278,19 @@ public class ChessBoard : MonoBehaviour
         File.WriteAllText(fullPath, json);
         Debug.Log("ChessBoard.json is saved.");
     }
-    [ContextMenu("LoadGame")]
     public void LoadGame()
-    {
-        BaseGameCTL.Current.removeAllPiceces();      
+    {        
         ListContainer ListPiecesInfo = new ListContainer();
 
         string file = "ChessBoard.json";
-        string path = "C:\\Users\\NgDang\\Desktop";
+        string path = Application.persistentDataPath;
         string filePath = Path.Combine(path, file);
 
         if (File.Exists(filePath))
         {
             string dataAsJson = File.ReadAllText(filePath);
-            ListPiecesInfo = JsonUtility.FromJson<ListContainer>(dataAsJson);           
-           
+            ListPiecesInfo = JsonUtility.FromJson<ListContainer>(dataAsJson);
+
         }
         else
         {
@@ -276,7 +310,7 @@ public class ChessBoard : MonoBehaviour
             BaseGameCTL.Current.txt_current_player.text = "BLACK";
             BaseGameCTL.Current.txt_current_player.color = Color.grey;
         }
-        BaseGameCTL.Current._time = ListPiecesInfo.timer;       
+        BaseGameCTL.Current._time = ListPiecesInfo.timer;
 
 
         foreach (var info in ListPiecesInfo.dataList)
@@ -286,11 +320,11 @@ public class ChessBoard : MonoBehaviour
             GO.name = info.Name;
 
             BasePiece p = GO.GetComponent<BasePiece>();
-            p.SetInfo(info, _cells[info.X][info.Y]);
-            pieces.Add(p);
-
+            p.SetInfo(info, ChessBoard.Current.Cells[info.X][info.Y]);
+            ChessBoard.Current.Pieces.Add(p);
         }
-    }
+    }    
+
 }
 public struct ListContainer
 {
