@@ -50,6 +50,7 @@ public class SettingManager : MonoBehaviour {
 
     public void OnApply()
     {
+        PlayerPrefs.SetFloat("volume", gameSettings.volume);
         SaveSettings();
     }
 

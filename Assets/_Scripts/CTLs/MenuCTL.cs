@@ -6,7 +6,15 @@ using UnityEngine.SceneManagement;
 
 public class MenuCTL : MonoBehaviour {
 
-	public void PlayGame()
+    GameObject audioSource;
+
+    void Awake()
+    {
+        audioSource = GameObject.Find("Music");
+        DontDestroyOnLoad(audioSource);
+    }
+
+    public void PlayGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
 
