@@ -16,8 +16,6 @@ public class P_Knight : BasePiece {
 
         foreach (var c in locs)
         {
-            Debug.Log(c);
-
             Cell cell = ChessBoard.Current.Cells[c.X][c.Y];
             if (cell.CurrentPiece == null)
                 _targetedCells.Add(cell);

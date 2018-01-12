@@ -11,24 +11,52 @@ public class BaseGameCTL : MonoBehaviour
 
     public const float TIME_TO_THINK = 10;
     public Text txt_time;
-    private float _time = 0;
+    public float _time = 0;
     private bool timeOutIsCalled = false;
 
+    private EGameInput _GameInput;
     private EGameState _gameState;
-    public EPlayer CurrentPlayer { get; private set; }
+    private EPlayer _CurrentPlayer;
+    public EPlayer CurrentPlayer
+    {
+        get
+        {
+            return _CurrentPlayer;
+        }
 
+        set
+        {
+            _CurrentPlayer = value;
+        }
+    }
+
+    #region propetity
     public EGameState GameState
     {
         get { return _gameState; }
         set { _gameState = value; }
     }
 
+    public EGameInput GameInput
+    {
+        get
+        {
+            return _GameInput;
+        }
+
+        set
+        {
+            _GameInput = value;
+        }
+    }
+    #endregion
 
     void Awake()
     {
         Current = this;
         CurrentPlayer = EPlayer.WHITE;
         GameState = EGameState.PLAYING;
+        GameInput = EGameInput.KEYBOARD;
     }
 
     void Start()
@@ -117,6 +145,23 @@ public class BaseGameCTL : MonoBehaviour
     {
         GameState = EGameState.GAME_OVER;
         Debug.Log("WinPlayer : " + winPlayer);
+    }
+    public void removeAllPiceces()
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                if (ChessBoard.Current.Cells[i][j].CurrentPiece != null)
+                {
+                    GameObject.Destroy(ChessBoard.Current.Cells[i][j].CurrentPiece.gameObject);
+                    ChessBoard.Current.Cells[i][j].SetPiece(null);
+                    CurrentPlayer = EPlayer.BLACK;            
+                    SwitchTurn();
+                }
+
+            }
+        }
     }
 
 }

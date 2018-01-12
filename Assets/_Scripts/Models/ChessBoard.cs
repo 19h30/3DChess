@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System;
 
 public class ChessBoard : MonoBehaviour
 {
@@ -51,8 +53,9 @@ public class ChessBoard : MonoBehaviour
 
 
 
-    private void CheckUserInput()
+    private void CheckUserInput()   
     {
+        #region MouseInput
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (Input.GetMouseButtonDown(0))
@@ -68,6 +71,10 @@ public class ChessBoard : MonoBehaviour
             if (Physics.Raycast(ray, out hit, 1000, CellLayerMask.value))
             {
                 Cell newCell = hit.collider.GetComponent<Cell>();
+
+                KeyBoardHelper.Update(newCell);
+
+                Debug.Log(newCell.Location.ToString());
 
                 switch (newCell.State)
                 {
@@ -116,17 +123,14 @@ public class ChessBoard : MonoBehaviour
 
             }
         }
+        #endregion
 
-        //Check vị trí con trỏ chuột
-
-        //Bắt lấy ô hiện tại
-
-        //Khi không có thì thôi
+       
     }
 
     [ContextMenu("InitChessBoard")]
     public void InitChessBoard()
-    {
+    { 
         basePosition = Vector3.zero + new Vector3(-3.5f * CELL_SIZE, 0, 0);
         _cells = new Cell[8][];
         for (int i = 0; i < 8; i++)
@@ -136,7 +140,7 @@ public class ChessBoard : MonoBehaviour
         {
             for (int j = 0; j < 8; j++)
             {
-                GameObject c = GameObject.Instantiate(cellPrefap, CanculatePosition(i, j),
+                GameObject c = GameObject.Instantiate(cellPrefap, CalculatePosition(i, j),
                     Quaternion.identity) as GameObject;
 
                 c.transform.parent = this.transform.GetChild(0);
@@ -152,23 +156,22 @@ public class ChessBoard : MonoBehaviour
 
 
     }
-
     [ContextMenu("InitChessPieces")]
     public void InitChessPieces()
     {
+
+        BaseGameCTL.Current.removeAllPiceces();
         pieces = new List<BasePiece>();
 
         List<PieceInfo> listInfo = new List<PieceInfo>();
 
-        //White
-        listInfo.Add(new PieceInfo() { Name = "W_PAWN_1", Path = "Pieces/W_PAWN", X = 0, Y = 1 });
-        listInfo.Add(new PieceInfo() { Name = "W_PAWN_2", Path = "Pieces/W_PAWN", X = 1, Y = 1 });
-        listInfo.Add(new PieceInfo() { Name = "W_PAWN_3", Path = "Pieces/W_PAWN", X = 2, Y = 1 });
-        listInfo.Add(new PieceInfo() { Name = "W_PAWN_4", Path = "Pieces/W_PAWN", X = 3, Y = 1 });
-        listInfo.Add(new PieceInfo() { Name = "W_PAWN_5", Path = "Pieces/W_PAWN", X = 4, Y = 1 });
-        listInfo.Add(new PieceInfo() { Name = "W_PAWN_6", Path = "Pieces/W_PAWN", X = 5, Y = 1 });
-        listInfo.Add(new PieceInfo() { Name = "W_PAWN_7", Path = "Pieces/W_PAWN", X = 6, Y = 1 });
-        listInfo.Add(new PieceInfo() { Name = "W_PAWN_8", Path = "Pieces/W_PAWN", X = 7, Y = 1 });
+        for (int i = 0; i < 8; i++)
+        {
+            listInfo.Add(new PieceInfo() { Name = "W_PAWN_" + i.ToString(), Path = "Pieces/W_PAWN", X = i, Y = 1 });
+            listInfo.Add(new PieceInfo() { Name = "B_PAWN_" + i.ToString(), Path = "Pieces/B_PAWN", X = i, Y = 6 });
+        }
+
+        //White      
 
         listInfo.Add(new PieceInfo() { Name = "W_ROOK_1", Path = "Pieces/W_ROOK", X = 0, Y = 0 });
         listInfo.Add(new PieceInfo() { Name = "W_ROOK_2", Path = "Pieces/W_ROOK", X = 7, Y = 0 });
@@ -179,15 +182,7 @@ public class ChessBoard : MonoBehaviour
         listInfo.Add(new PieceInfo() { Name = "W_KING", Path = "Pieces/W_KING", X = 3, Y = 0 });
         listInfo.Add(new PieceInfo() { Name = "W_QUEEN", Path = "Pieces/W_QUEEN", X = 4, Y = 0 });
 
-        //White
-        listInfo.Add(new PieceInfo() { Name = "B_PAWN_1", Path = "Pieces/B_PAWN", X = 0, Y = 6 });
-        listInfo.Add(new PieceInfo() { Name = "B_PAWN_2", Path = "Pieces/B_PAWN", X = 1, Y = 6 });
-        listInfo.Add(new PieceInfo() { Name = "B_PAWN_3", Path = "Pieces/B_PAWN", X = 2, Y = 6 });
-        listInfo.Add(new PieceInfo() { Name = "B_PAWN_4", Path = "Pieces/B_PAWN", X = 3, Y = 6 });
-        listInfo.Add(new PieceInfo() { Name = "B_PAWN_5", Path = "Pieces/B_PAWN", X = 4, Y = 6 });
-        listInfo.Add(new PieceInfo() { Name = "B_PAWN_6", Path = "Pieces/B_PAWN", X = 5, Y = 6 });
-        listInfo.Add(new PieceInfo() { Name = "B_PAWN_7", Path = "Pieces/B_PAWN", X = 6, Y = 6 });
-        listInfo.Add(new PieceInfo() { Name = "B_PAWN_8", Path = "Pieces/B_PAWN", X = 7, Y = 6 });
+        //Black        
 
         listInfo.Add(new PieceInfo() { Name = "B_ROOK_1", Path = "Pieces/B_ROOK", X = 0, Y = 7 });
         listInfo.Add(new PieceInfo() { Name = "B_ROOK_2", Path = "Pieces/B_ROOK", X = 7, Y = 7 });
@@ -211,9 +206,106 @@ public class ChessBoard : MonoBehaviour
         }
 
     }
-
-    public Vector3 CanculatePosition(int i, int j)
+    public Vector3 CalculatePosition(int i, int j)
     {
         return basePosition + new Vector3(i * CELL_SIZE, 0, j * CELL_SIZE);
+    }
+
+    [ContextMenu("SaveGame")]
+    public void SaveGame()
+    {
+        List<PieceInfo> listInfo = new List<PieceInfo>();
+        string _player = BaseGameCTL.Current.CurrentPlayer == EPlayer.WHITE ? "white" : "black";       
+
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                var temp = ChessBoard.Current.Cells[i][j].CurrentPiece;
+                if (temp != null)
+                {
+                    PieceInfo _pieceInfo = new PieceInfo() { Name = temp.Info.Name, Path = temp.Info.Path, X = temp.Location.X, Y = temp.Location.Y };
+                    listInfo.Add(_pieceInfo);
+                }
+            }
+        }
+
+        ListContainer ListPiecesInfo = new ListContainer(listInfo,(int)Math.Round(BaseGameCTL.Current._time),_player);
+        string json = JsonUtility.ToJson(ListPiecesInfo);       
+        string path = "C:\\Users\\NgDang\\Desktop";
+        string _file = "ChessBoard.json";
+        string fullPath = Path.Combine(path, _file);
+        if (File.Exists(fullPath))
+        {
+            File.Delete(fullPath);
+        }
+        File.WriteAllText(fullPath, json);
+        Debug.Log("ChessBoard.json is saved.");
+    }
+    [ContextMenu("LoadGame")]
+    public void LoadGame()
+    {
+        BaseGameCTL.Current.removeAllPiceces();      
+        ListContainer ListPiecesInfo = new ListContainer();
+
+        string file = "ChessBoard.json";
+        string path = "C:\\Users\\NgDang\\Desktop";
+        string filePath = Path.Combine(path, file);
+
+        if (File.Exists(filePath))
+        {
+            string dataAsJson = File.ReadAllText(filePath);
+            ListPiecesInfo = JsonUtility.FromJson<ListContainer>(dataAsJson);           
+           
+        }
+        else
+        {
+            //Error     
+            ListPiecesInfo = new ListContainer();
+        }
+
+        if (ListPiecesInfo.player == "white")
+        {
+            BaseGameCTL.Current.CurrentPlayer = EPlayer.WHITE;
+            BaseGameCTL.Current.txt_current_player.text = "WHITE";
+            BaseGameCTL.Current.txt_current_player.color = Color.white;
+        }
+        else
+        {
+            BaseGameCTL.Current.CurrentPlayer = EPlayer.BLACK;
+            BaseGameCTL.Current.txt_current_player.text = "BLACK";
+            BaseGameCTL.Current.txt_current_player.color = Color.grey;
+        }
+        BaseGameCTL.Current._time = ListPiecesInfo.timer;       
+
+
+        foreach (var info in ListPiecesInfo.dataList)
+        {
+            GameObject GO = GameObject.Instantiate<GameObject>(ResourcesCTL.Instance.GetGameObject(info.Path));
+            GO.transform.parent = this.transform.GetChild(1);
+            GO.name = info.Name;
+
+            BasePiece p = GO.GetComponent<BasePiece>();
+            p.SetInfo(info, _cells[info.X][info.Y]);
+            pieces.Add(p);
+
+        }
+    }
+}
+public struct ListContainer
+{
+    public List<PieceInfo> dataList;
+    public int timer;
+    public string player;
+
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="_dataList">Data list value</param>
+    public ListContainer(List<PieceInfo> _dataList,int _timer, string _player)
+    {
+        dataList = _dataList;
+        timer = _timer;
+        player = _player;
     }
 }
