@@ -13,10 +13,8 @@ public class MenuCTL : MonoBehaviour {
     }
     public void SaveGame()
     {
-        string json = JsonUtility.ToJson(ChessBoard.Current);     
-        string file = "Chessboard.json";
-        string path = "C:\\Users\\NgDang\\Desktop";
-        string fullPath = Path.Combine(path, file);
+        string json = JsonUtility.ToJson(ChessBoard.Current);
+        string fullPath = Application.persistentDataPath + "/Chessboard.json";
         if (File.Exists(fullPath))
         {
             File.Delete(fullPath);
