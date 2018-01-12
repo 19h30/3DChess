@@ -31,6 +31,8 @@ public class ResumeCTL : MonoBehaviour {
 
     public void MainMenu()
     {
+        Time.timeScale = 1;
+        BaseGameCTL.Current.GameState = EGameState.GAME_OVER;
         music = GameObject.Find("Music");
         Destroy(music);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
